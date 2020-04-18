@@ -65,8 +65,10 @@ namespace ReportPortal.Client.Abstractions.Responses
     [DataContract]
     public class Attribute
     {
+        [DataMember(Name = "key")]
         public string Key { get; set; }
 
+        [DataMember(Name = "value")]
         public string Value { get; set; }
     }
 
