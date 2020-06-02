@@ -13,7 +13,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         public string TestCaseHash { get; set; }
 
         [DataMember(Name = "resources")]
-        public IEnumerable<TestItemHistoryResponse> Resources { get; set; }
+        public IEnumerable<TestItemResponse> Resources { get; set; }
     }
 
     [DataContract]
