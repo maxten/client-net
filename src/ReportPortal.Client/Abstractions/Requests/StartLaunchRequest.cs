@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Converters;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ReportPortal.Client.Abstractions.Responses;
 
 namespace ReportPortal.Client.Abstractions.Requests
 {
@@ -55,7 +55,8 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// Mark the launch with tags.
         /// </summary>
-        [DataMember(Name = "tags", EmitDefaultValue = true)]
+        [Obsolete("Use Attributes instead of Tags.")]
+        [DataMember(Name = "tags", EmitDefaultValue = false)]
         public List<string> Tags { get; set; }
 
         /// <summary>
@@ -74,19 +75,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Launch attributes.
         /// </summary>
         [DataMember(Name = "attributes")]
-        public IEnumerable<Attribute> Attributes { get; set; }
-
-        [DataContract]
-        public class Attribute
-        {
-            [DataMember(Name = "key")]
-            public string Key { get; set; }
-
-            [DataMember(Name = "value")]
-            public string Value { get; set; }
-
-            [DataMember(Name = "system")]
-            public bool IsSystem { get; set; }
-        }
+        public IList<ItemAttribute> Attributes { get; set; }
     }
 }

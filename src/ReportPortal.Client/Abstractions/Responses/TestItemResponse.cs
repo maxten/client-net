@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Converters;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace ReportPortal.Client.Abstractions.Responses
@@ -37,7 +38,7 @@ namespace ReportPortal.Client.Abstractions.Responses
 
         public DateTime? EndTime
         {
-            get => EndTimeString == null? (DateTime?)null: DateTimeConverter.ConvertTo(EndTimeString);
+            get => EndTimeString == null ? (DateTime?)null : DateTimeConverter.ConvertTo(EndTimeString);
             set => EndTimeString = DateTimeConverter.ConvertFrom(value.GetValueOrDefault());
         }
 
@@ -47,8 +48,8 @@ namespace ReportPortal.Client.Abstractions.Responses
         [DataMember(Name = "retry")]
         public bool IsRetry { get; set; }
 
-        public Status Status 
-        { 
+        public Status Status
+        {
             get => EnumConverter.ConvertTo<Status>(StatusString);
             set => StatusString = EnumConverter.ConvertFrom(value);
         }
@@ -56,8 +57,8 @@ namespace ReportPortal.Client.Abstractions.Responses
         [DataMember(Name = "type")]
         public string TypeString { get; set; }
 
-        public TestItemType Type 
-        { 
+        public TestItemType Type
+        {
             get => EnumConverter.ConvertTo<TestItemType>(TypeString);
             set => TypeString = EnumConverter.ConvertFrom(value);
         }
@@ -84,20 +85,7 @@ namespace ReportPortal.Client.Abstractions.Responses
         /// Test item attributes.
         /// </summary>
         [DataMember(Name = "attributes")]
-        public IEnumerable<Attribute> Attributes { get; set; }
-
-        [DataContract]
-        public class Attribute
-        {
-            [DataMember(Name = "key")]
-            public string Key { get; set; }
-
-            [DataMember(Name = "value")]
-            public string Value { get; set; }
-
-            [DataMember(Name = "system")]
-            public bool IsSystem { get; set; }
-        }
+        public IEnumerable<ItemAttribute> Attributes { get; set; }
     }
 
     [DataContract]

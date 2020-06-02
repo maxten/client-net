@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
-using System.Text;
+﻿using ReportPortal.Client.Abstractions.Filtering;
+using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Abstractions.Requests;
 using ReportPortal.Client.Abstractions.Responses;
-using ReportPortal.Client.Abstractions.Filtering;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace ReportPortal.Client.IntegrationTests.LogItem
 {
@@ -81,8 +82,7 @@ namespace ReportPortal.Client.IntegrationTests.LogItem
             var getLog = await Service.LogItem.GetAsync(log.Uuid);
             Assert.Equal("Log1", getLog.Text);
 
-            var logMessage = await Service.LogItem.GetAsync(log.Uuid);
-            var binaryId = logMessage.Content.Id;
+            var binaryId = getLog.Content.Id;
 
             var logData = await Service.LogItem.GetBinaryDataAsync(binaryId);
             Assert.Equal(data, logData);

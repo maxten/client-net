@@ -1,15 +1,16 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using ReportPortal.Client.Abstractions;
+﻿using ReportPortal.Client.Abstractions;
 using ReportPortal.Client.Abstractions.Resources;
-using ReportPortal.Client.Extentions;
+using ReportPortal.Client.Resources;
+using System;
+#if NET45
+using System.Net;
+#endif
+using System.Net.Http;
 
 namespace ReportPortal.Client
 {
     /// <inheritdoc/>
-    public partial class Service : IClientService
+    public partial class Service : IClientService, IDisposable
     {
         private readonly HttpClient _httpClient;
 
@@ -18,135 +19,57 @@ namespace ReportPortal.Client
         /// </summary>
         /// <param name="uri">Base URI for REST service.</param>
         /// <param name="projectName">A project to manage.</param>
-        /// <param name="token">A password for user. Can be UID given from user's profile page.</param>
-        public Service(Uri uri, string projectName, string token) : this(uri, projectName, token, null)
+        /// <param name="token">A token for user. Can be UID given from user's profile page.</param>
+        /// <param name="httpClientFactory">Factory object to create an instance of <see cref="HttpClient"/>.</param>
+        public Service(Uri uri, string projectName, string token, IHttpClientFactory httpClientFactory = null)
         {
-
-        }
-
-        /// <summary>
-        /// Constructor to initialize a new object of service.
-        /// </summary>
-        /// <param name="uri">Base URI for REST service.</param>
-        /// <param name="projectName">A project to manage.</param>
-        /// <param name="token">A password for user. Can be UID given from user's profile page.</param>
-        /// <param name="proxy">Proxy for all HTTP requests.</param>
-        public Service(Uri uri, string projectName, string token, IWebProxy proxy)
-        {
-            if (proxy != null)
-            {
-                var httpClientHandler = new HttpClientHandler
-                {
-                    Proxy = proxy,
-                    UseProxy = true
-                };
-
-                _httpClient = new HttpClient(httpClientHandler);
-            }
-            else
-            {
-                _httpClient = new HttpClient();
-            }
-
-            if (!uri.LocalPath.ToLowerInvariant().Contains("api/v1"))
-            {
-                uri = uri.Append("api/v1");
-            }
-            _httpClient.BaseAddress = uri;
-
-            _httpClient.DefaultRequestHeaders.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
-            _httpClient.DefaultRequestHeaders.Add("User-Agent", ".NET Reporter");
-
-            if (proxy != null)
-            { }
-
-            BaseUri = uri;
             ProjectName = projectName;
-            Token = token;
+
+            if (httpClientFactory == null)
+            {
+                httpClientFactory = new HttpClientFactory(uri, token);
+            }
+
+            _httpClient = httpClientFactory.Create();
 
 #if NET45
             ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
 #endif
-        }
 
-        /// <summary>
-        /// Timeout for http requests.
-        /// </summary>
-        public TimeSpan Timeout
-        {
-            get
-            {
-                return _httpClient.Timeout;
-            }
-            set
-            {
-                _httpClient.Timeout = value;
-            }
+            Launch = new ServiceLaunchResource(_httpClient, ProjectName);
+            TestItem = new ServiceTestItemResource(_httpClient, ProjectName);
+            LogItem = new ServiceLogItemResource(_httpClient, ProjectName);
+            User = new ServiceUserResource(_httpClient, ProjectName);
+            UserFilter = new ServiceUserFilterResource(_httpClient, ProjectName);
+            Project = new ServiceProjectResource(_httpClient, ProjectName);
         }
 
         /// <summary>
         /// Get or set project name to interact with.
         /// </summary>
-        public string ProjectName { get; set; }
+        public string ProjectName { get; }
 
-        /// <summary>
-        /// Base api uri for http requests.
-        /// </summary>
-        public Uri BaseUri { get; set; }
+        /// <inheritdoc/>
+        public ILaunchResource Launch { get; }
 
-        /// <summary>
-        /// User token to interact with api.
-        /// </summary>
-        public string Token { get; set; }
+        /// <inheritdoc/>
+        public ITestItemResource TestItem { get; }
 
-        public ILaunchResource Launch
+        /// <inheritdoc/>
+        public ILogItemResource LogItem { get; }
+
+        /// <inheritdoc/>
+        public IUserResource User { get; }
+
+        /// <inheritdoc/>
+        public IUserFilterResource UserFilter { get; }
+
+        /// <inheritdoc/>
+        public IProjectResource Project { get; }
+
+        public void Dispose()
         {
-            get
-            {
-                return new ServiceLaunchResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
-
-        public ITestItemResource TestItem
-        {
-            get
-            {
-                return new ServiceTestItemResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
-
-        public ILogItemResource LogItem
-        {
-            get
-            {
-                return new ServiceLogItemResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
-
-        public IUserResource User
-        {
-            get
-            {
-                return new ServiceUserResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
-
-        public IUserFilterResource UserFilter
-        {
-            get
-            {
-                return new ServiceUserFilterResource(_httpClient, BaseUri, ProjectName);
-            }
-        }
-
-        public IProjectResource Project
-        {
-            get
-            {
-                return new ServiceProjectResource(_httpClient, BaseUri, ProjectName);
-            }
+            _httpClient.Dispose();
         }
     }
 }

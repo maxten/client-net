@@ -1,7 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Converters;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
+
 namespace ReportPortal.Client.Abstractions.Responses
 {
     [DataContract]
@@ -56,18 +58,10 @@ namespace ReportPortal.Client.Abstractions.Responses
         public List<string> Tags { get; set; }
 
         [DataMember(Name = "attributes")]
-        public IEnumerable<Attribute> Attributes { get; set; }
+        public IEnumerable<ItemAttribute> Attributes { get; set; }
 
         [DataMember(Name = "statistics")]
         public Statistic Statistics { get; set; }
-    }
-
-    [DataContract]
-    public class Attribute
-    {
-        public string Key { get; set; }
-
-        public string Value { get; set; }
     }
 
     [DataContract]

@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ReportPortal.Client.Abstractions.Models;
 using ReportPortal.Client.Converters;
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ReportPortal.Client.Abstractions.Responses;
 
 namespace ReportPortal.Client.Abstractions.Requests
 {
@@ -61,7 +61,8 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// <summary>
         /// A list of tags.
         /// </summary>
-        [DataMember(Name = "tags", EmitDefaultValue = true)]
+        [Obsolete("Use Attributes instead of Tags.")]
+        [DataMember(Name = "tags", EmitDefaultValue = false)]
         public IEnumerable<string> Tags { get; set; }
 
         /// <summary>
@@ -74,7 +75,7 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// A list of parameters.
         /// </summary>
         [DataMember(Name = "parameters")]
-        public IEnumerable<KeyValuePair<string, string>> Parameters { get; set; }
+        public IList<KeyValuePair<string, string>> Parameters { get; set; }
 
         /// <summary>
         /// A test item unique id.
@@ -82,6 +83,15 @@ namespace ReportPortal.Client.Abstractions.Requests
         [DataMember(Name = "uniqueId", EmitDefaultValue = true)]
         public string UniqueId { get; set; }
 
+        /// <summary>
+        /// Test Case ID.
+        /// </summary>
+        [DataMember(Name = "testCaseId")]
+        public string TestCaseId { get; set; }
+
+        /// <summary>
+        /// Define if test item has stats. If false - considered as nested step.
+        /// </summary>
         [DataMember(Name = "hasStats")]
         public bool HasStats { get; set; } = true;
 
@@ -89,19 +99,6 @@ namespace ReportPortal.Client.Abstractions.Requests
         /// Test item attributes.
         /// </summary>
         [DataMember(Name = "attributes")]
-        public IEnumerable<Attribute> Attributes { get; set; }
-
-        [DataContract]
-        public class Attribute
-        {
-            [DataMember(Name = "key")]
-            public string Key { get; set; }
-
-            [DataMember(Name = "value")]
-            public string Value { get; set; }
-
-            [DataMember(Name = "system")]
-            public bool IsSystem { get; set; }
-        }
+        public IList<ItemAttribute> Attributes { get; set; }
     }
 }
