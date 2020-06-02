@@ -18,6 +18,9 @@ namespace ReportPortal.Client.Abstractions.Responses
         [DataMember(Name = "parent")]
         public string ParentId { get; set; }
 
+        [DataMember(Name = "launchId")]
+        public long LaunchId { get; set; }
+
         [DataMember(Name = "name")]
         public string Name { get; set; }
 
